@@ -2,8 +2,8 @@ from django.db import models
 
 # Create your models here.
 
-class customers_customer(models.model):
-    id = models.IntegerField
+class customers_customer(models.Model):
+    #id = models.IntegerField
     created_at = models.DateTimeField
     updated_at = models.DateTimeField
     external_id = models.CharField(max_length= 50)
@@ -11,8 +11,8 @@ class customers_customer(models.model):
     score = models.DecimalField(max_digits=12, decimal_places=2)
     preapproved_at = models.IntegerField
 
-class loans_loan(models.model):
-    id = models.IntegerField
+class loans_loan(models.Model):
+    #id = models.IntegerField
     created_at = models.DateTimeField
     updated_at = models.DateTimeField
     external_id = models.CharField(max_length= 50)
@@ -25,8 +25,8 @@ class loans_loan(models.model):
     outstanding = models.DecimalField(max_digits=12, decimal_places=2)
 
 
-class payments_payment(models.model):
-    id = models.IntegerField
+class payments_payment(models.Model):
+    #id = models.IntegerField
     created_at = models.DateTimeField
     updated_at = models.DateTimeField
     external_id = models.CharField(max_length= 50)
@@ -35,8 +35,8 @@ class payments_payment(models.model):
     paid_at = models.DateTimeField
     customer_id = models.IntegerField
 
-class payments_paymentdetail(models.model):
-    id = models.IntegerField
+class payments_paymentdetail(models.Model):
+    #id = models.IntegerField
     created_at = models.DateTimeField
     updated_at = models.DateTimeField
     amount = models.DecimalField(max_digits=20, decimal_places=10)
