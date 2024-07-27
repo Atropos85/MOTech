@@ -8,7 +8,13 @@ class customer_Serializer(serializers.ModelSerializer):
     class Meta:
         model = customers_customer
         fields = '__all__'
-        
+
+class CustomerBalanceSerializer(serializers.Serializer):
+    customer_id = serializers.CharField(max_length= 40)
+    score = serializers.DecimalField(max_digits=12, decimal_places=2)
+    total_debt = serializers.DecimalField(max_digits=12, decimal_places=2)
+    available_amount = serializers.DecimalField(max_digits=12, decimal_places=2)
+       
 class loan_Serializer(serializers.ModelSerializer):
     class Meta:
         model = loans_loan
