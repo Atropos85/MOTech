@@ -15,7 +15,10 @@ urlpatterns = [
     path(r'getpayment/<id>/', getpaymentView.as_view()), 
     path(r'getpaymentdetail/<id>/', getpaymentdetailView.as_view()), 
     path(r'createpayment', createpaymentView.as_view()),     
-    path(r'customerpayments/', customerpaymentdetailView.as_view()), 
+    path(r'customerpayments', customerpaymentdetailView.as_view()), 
+    path(r'RejectedPayment', RejectedPaymentView.as_view()), 
+
+
     
 
 ]

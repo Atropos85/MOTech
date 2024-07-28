@@ -98,7 +98,36 @@ class createpaymentView(APIView):
                 'message': 'Payment processed successfully.',
                 #'payment': serializer.data
             }, status=status.HTTP_201_CREATED)
-               
+        
+class RejectedPaymentView(APIView):           
+    def post(self, request, format=None):
+        payment_id = request.data.get('payment_id')
+
+        paydetail = payments_paymentdetail.objects.filter(payment_id=payment_id)
+    
+        # Recorrer cada préstamo y actualizar el campo outstanding
+        for paydetails in paydetail:
+            payment = paydetails.payment_id
+            loan = paydetails.loan_id
+            amount = paydetails.amount
+
+            payment = payments_payment.objects.get(id =payment.id)
+            payment.status = 2
+            payment.save()
+
+            loan = paydetails.loan_id
+            amount = paydetails.amount
+
+            loan = loans_loan.objects.get(id=loan.id)
+            loan.status = 2
+            loan.outstanding += amount
+            loan.save()
+
+        return Response({
+            'message': 'Payment rejected successfully.',
+            #'payment': serializer.data
+        }, status=status.HTTP_201_CREATED)
+            
 
 class customerpaymentdetailView(generics.ListAPIView):
 
