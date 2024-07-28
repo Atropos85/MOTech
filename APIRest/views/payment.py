@@ -127,10 +127,4 @@ class RejectedPaymentView(APIView):
             'message': 'Payment rejected successfully.',
             #'payment': serializer.data
         }, status=status.HTTP_201_CREATED)
-            
-
-class customerpaymentdetailView(generics.ListAPIView):
-
-    queryset = customers_customer.objects.prefetch_related('loans_set').all()
-    serializer_class = CustomerLoanSerializer
     

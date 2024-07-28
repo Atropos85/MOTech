@@ -1,11 +1,12 @@
-from rest_framework import generics
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from django.http import Http404
+from rest_framework.decorators import api_view
+import csv
+from io import StringIO
 from ..models import *
 from ..serializer import *
-from datetime import timezone
+
 # Create your views here.
 
 class listcustomerView(APIView):
@@ -59,4 +60,3 @@ class CustomerBalanceView(APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-      

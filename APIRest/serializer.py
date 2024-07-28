@@ -40,14 +40,3 @@ class CustomePaymentsSerializer(serializers.Serializer):
     total_amount = serializers.DecimalField(max_digits=12, decimal_places=2)
     payment_amount = serializers.DecimalField(max_digits=12, decimal_places=2)
        
-class LoanExternalIDSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = loans_loan
-        fields = ['external_id']
-
-class CustomerLoanSerializer(serializers.ModelSerializer):
-    loans = LoanExternalIDSerializer(many=True, source='loans_set', read_only=True)
-
-    class Meta:
-        model = customers_customer
-        fields = ['external_id', 'loans']
