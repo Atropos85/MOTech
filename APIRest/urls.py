@@ -1,21 +1,22 @@
 from django.urls import path, include
 from rest_framework import routers
-from .views import *
-
-router = routers.DefaultRouter()
-
-# router.register(r'payment',views.paymentViewSet) 
-# router.register(r'paymentdetail',views.paymentdetailViewSet) 
-
-# urlpatterns = [
-#     path('', include(router.urls))
-# ]
+from .views.customer import *
+from .views.loan import *
+from .views.payment import *
 
 app_name = 'APIRest'
 urlpatterns = [
-    path(r'customer', customerView.as_view()), 
+    path(r'listcustomer', listcustomerView.as_view()), 
+    path(r'getcustomer/<id>/', getcustomerView.as_view()), 
+    path(r'createcustomer', createcustomerView.as_view()), 
     path(r'customerBalance/<id>/', CustomerBalanceView.as_view()), 
-    path(r'loan/<id>/', loanView.as_view()), 
+    path(r'getloan/<id>/', getloanView.as_view()), 
+    path(r'createloan', createloanView.as_view()), 
+    path(r'getpayment/<id>/', getpaymentView.as_view()), 
+    path(r'getpaymentdetail/<id>/', getpaymentdetailView.as_view()), 
+    path(r'createpayment', createpaymentView.as_view()),     
+    path(r'customerpayments/', customerpaymentdetailView.as_view()), 
+    
 
 ]
     

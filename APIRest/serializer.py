@@ -30,3 +30,24 @@ class paymentdetail_Serializer(serializers.ModelSerializer):
         model = payments_paymentdetail
         fields = '__all__'
         
+
+class CustomePaymentsSerializer(serializers.Serializer):
+    payment_external_id = serializers.CharField(max_length= 40)
+    customer_external_id = serializers.CharField(max_length= 40)
+    loan_external_id = serializers.CharField(max_length= 40)
+    payment_date =  serializers.DateTimeField()
+    status = serializers.IntegerField()
+    total_amount = serializers.DecimalField(max_digits=12, decimal_places=2)
+    payment_amount = serializers.DecimalField(max_digits=12, decimal_places=2)
+       
+class LoanExternalIDSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = loans_loan
+        fields = ['external_id']
+
+class CustomerLoanSerializer(serializers.ModelSerializer):
+    loans = LoanExternalIDSerializer(many=True, source='loans_set', read_only=True)
+
+    class Meta:
+        model = customers_customer
+        fields = ['external_id', 'loans']

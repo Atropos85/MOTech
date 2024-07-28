@@ -19,27 +19,27 @@ class loans_loan(models.Model):
     external_id = models.CharField(max_length= 40, unique=True)
     amount = models.DecimalField(max_digits=12, decimal_places=2)
     status = models.SmallIntegerField(default = 1)
-    contract_version = models.CharField(max_length= 50,null=True)
+    contract_version = models.CharField(max_length= 60,null=True)
     maximun_payment_date = models.DateTimeField(null=True)
     taken_at = models.DateTimeField(auto_now=True)
-    customer_id = models.ForeignKey(customers_customer, on_delete=models.CASCADE)
+    customer_id = models.ForeignKey(customers_customer, on_delete=models.CASCADE, related_name='loans')
     outstanding = models.DecimalField(max_digits=12, decimal_places=2)
 
 
 class payments_payment(models.Model):
     #id = models.IntegerField
-    created_at = models.DateTimeField()
-    updated_at = models.DateTimeField()
-    external_id = models.CharField(max_length= 40)
+    created_at = models.DateTimeField(auto_now=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    external_id = models.CharField(max_length= 40, unique=True)
     total_amount = models.DecimalField(max_digits=12, decimal_places=2)
-    status = models.SmallIntegerField()
-    paid_at = models.DateTimeField()
-    customer_id = models.IntegerField()
+    status = models.SmallIntegerField(null = True)
+    paid_at = models.DateTimeField(auto_now=True)
+    customer_id = models.ForeignKey(customers_customer, on_delete=models.CASCADE)
 
 class payments_paymentdetail(models.Model):
     #id = models.IntegerField
-    created_at = models.DateTimeField()
-    updated_at = models.DateTimeField()
+    created_at = models.DateTimeField(auto_now=True)
+    updated_at = models.DateTimeField(auto_now=True)
     amount = models.DecimalField(max_digits=20, decimal_places=10)
-    loan_id = models.IntegerField()
-    payment_id = models.IntegerField()
+    loan_id = models.ForeignKey(loans_loan, on_delete=models.CASCADE)
+    payment_id = models.ForeignKey(payments_payment, on_delete=models.CASCADE)
