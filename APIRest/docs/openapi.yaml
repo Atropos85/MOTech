@@ -1,0 +1,299 @@
+openapi: 3.0.0
+info:
+  description: Aplicacion para administrar prestamos.
+  version: 1.0.0
+  title: MoTech application
+servers:
+  - url: 'https://127.0.0.1/APIRest'
+    description: 'Entorno de desarrollo aplicacion'
+paths:
+
+  /customer/getcustomer:
+    get:
+      tags: 
+        - Customer
+      summary: Obtener cliente
+      description: Este método obtiene el cliente
+      parameters: 
+        - name: id
+          in: query
+          description: "Codigo unico cliente"
+          example: "1"
+          schema:
+            type: integer
+            
+      responses:
+        200:
+          description: operacion correcta
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+        500:
+          description: error de servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    
+
+  /customer/customerBalance:
+    get:
+      tags: 
+        - Customer
+      summary: Obtener cliente
+      description: Este método lista usuarios
+      parameters: 
+        - name: id
+          in: query
+          description: "Codigo cliente"
+          schema:
+            type: integer
+
+      responses:
+        200:
+          description: operacion correcta
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Balance'
+        500:
+          description: error de servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+ 
+  /customer/createcustomer:               
+    post:
+      tags:
+        - Customer
+      summary: Crear Clientes
+      description: Este método crea Clientes
+      
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Customer'
+              
+      responses:
+        200:
+          description: operacion correcta
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+
+
+
+  /Prestamos:
+    get:
+      tags: 
+        - Loans
+      summary: Obtener Prestamo
+      description: Este método obtiene el prestamo
+      parameters: 
+        - name: id
+          in: query
+          description: "Codigo unico del prstamo"
+          example: 1
+          schema:
+            type: integer
+
+      responses:
+        200:
+          description: operacion correcta
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Loans'
+        500:
+          description: error de servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    
+    post:
+      tags:
+        - Loans
+      summary: Crear Clientes
+      description: Este método crea Clientes
+      responses:
+        200:
+          description: operacion correcta
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Loans'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Loans'
+
+  /Pagos:
+    get:
+      tags: 
+        - Payments
+      summary: Obtener Pagos
+      description: Este método obtiene Los pagos realizados por un cliente
+      parameters: 
+        - name: id
+          in: query
+          description: "Codigo unico de pago"
+          example: 1
+          schema:
+            type: integer
+            
+      responses:
+        200:
+          description: operacion correcta
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentsGet'
+        500:
+          description: error de servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    
+    post:
+      tags:
+        - Payments
+      summary: Crear Clientes
+      description: Este método crea Clientes
+      responses:
+        200:
+          description: operacion correcta
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Payments'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Payments'
+
+
+components:
+  schemas:    
+
+    Balance:
+      type: object
+      properties:
+        customer_id:
+          type: integer
+        score:
+          type: string
+        total_debt:
+          type: integer
+        available_amount:
+          type: number
+          
+    Customer:
+      type: object
+      required: 
+        - external_id
+        - score
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        external_id:
+          type: string
+        status:
+          type: integer
+        score:
+          type: number
+        preapproved_at:
+          type: string
+          
+    Loans:
+      type: object
+      required: 
+        - external_id
+        - customer_id
+        - amount
+        - outstanding
+        - status
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        external_id:
+          type: string
+        amount:
+          type: number
+        status:
+          type: integer
+        contract_version:
+          type: string
+        maximun_payment_date:
+          type: string
+        taken_at:
+          type: string
+        customer_id:
+          type: integer
+        outstanding:
+          type: number
+    
+    Payments:
+      type: object
+      required: 
+        - external_id
+        - customer_id
+        - total_amount
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        external_id:
+          type: string
+        total_amount :
+          type: number
+        status:
+          type: integer
+        paid_at :
+          type: string            
+        customer_id  :
+          type: integer
+          
+    PaymentsGet:
+      type: object
+      properties:
+        payment_external_id:
+          type: integer
+        customer_external_id:
+          type: integer
+        loan_external_id :
+          type: integer
+        status:
+          type: integer
+        total_amount :
+          type: number            
+        payment_amount  :
+          type: number
+  
+    Error:
+      type: object
+      properties:
+        code:
+          description: Código de error
+          type: string
+        status:
+          description: httpstatus
+          type: integer
+          format: int32
+        type:
+          type: string
+          description: Tipo de error
+        message:
+          type: string
+          description: Mensaje de error          
+      
+  
