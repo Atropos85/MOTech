@@ -70,7 +70,9 @@ class payment_Serializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class PayDetSerializer(serializers.ModelSerializer):
-    
+    loan_id = serializers.CharField(source = 'loan_id')
+    payment_amount = serializers.DecimalField(source = 'amount')
+   
     class Meta:
         model = payments_paymentdetail
         fields = ['loan_id', 'amount']
@@ -81,14 +83,13 @@ class LoaSerializer(serializers.ModelSerializer):
         model = loans_loan
         fields = ['external_id']
 
-class PayDetSerializer(serializers.ModelSerializer):
-    
-    class Meta:
-        model = payments_paymentdetail
-        fields = ['loan_id', 'amount']
-
 class PaySerializer(serializers.ModelSerializer):
     payment_details = PayDetSerializer(many=True, read_only=True)
+    
+    payment_external_id = serializers.CharField(source = 'external_id')
+    total_amount = serializers.DecimalField(source = 'total_amount')
+    status = serializers.IntegerField(source = 'status')
+    payment_date = serializers.DateTimeField(source = 'paid_at')
     
     class Meta:
         model = payments_payment
@@ -97,7 +98,7 @@ class PaySerializer(serializers.ModelSerializer):
 class CusSerializer(serializers.ModelSerializer):
     #loans = LoaSerializer(many=True, read_only=True)
     payments = PaySerializer(many=True, read_only=True)
-
+    customer_external_id = serializers.IntegerField(source = 'external_id')
     class Meta:
         model = customers_customer
         fields = ['external_id', 'payments']
