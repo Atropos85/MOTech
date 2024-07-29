@@ -5,126 +5,111 @@ from rest_framework import status
 from django.http import Http404
 from ..models import *
 from ..serializer import *
-from datetime import timezone
+
 # Create your views here.
 
-class getpaymentView(APIView):
-    def  get(self, request, id):
-        payment = payments_payment.objects.filter(customer_id=id)
-        if payment:
-           serializer = payment_Serializer (payment, many=True)       
-           return Response(serializer.data)  
-
 class getpaymentdetailView(APIView):
-    def  get(self, request, id):
-        payment = payments_paymentdetail.objects.filter(payment_id=id)
-        if payment:
-           serializer = paymentdetail_Serializer (payment, many=True)       
-           return Response(serializer.data)   
+    def get(self, request, id):
+        customer = customers_customer.objects.prefetch_related('payments').get(pk=id)
+        serializer = CusSerializer(customer)
 
-class createpaymentView(APIView):           
+        return Response(serializer.data)  
+
+class createpaymentView(APIView):
     def post(self, request, format=None):
-        amount = request.data.get('total_amount')
+        amount = float(request.data.get('total_amount'))
         customer_id = request.data.get('customer_id')
         customer = customers_customer.objects.get(id=customer_id)
         total_debt = loans_loan.objects.filter(customer_id=customer_id).aggregate(
             total_debt=models.Sum('outstanding')
         )['total_debt'] or 0
         
-        if (total_debt) == 0:         
+        if total_debt == 0:         
             new_status = 2     
-
             return Response({
-                'message': 'There are not loans active with debt, payment rejected.',
+                'message': 'There are no active loans with debt, payment rejected.',
             }, status=status.HTTP_201_CREATED)
-        elif total_debt < amount:
+        elif amount > total_debt:
             new_status = 2   
-            
             return Response({
-                'message': 'The value of the payment it is mayor of the total debt, payment rejected.',
+                'message': 'The payment amount exceeds the total debt, payment rejected.',
             }, status=status.HTTP_201_CREATED)
-
         else:
             new_status = 1
 
         payment = payments_payment(
-            external_id  = request.data.get('external_id'),
-            total_amount = request.data.get('total_amount'),
-            customer_id  = customer,
-            status       = new_status  # Establecer el campo status basado en total_amount
+            external_id=request.data.get('external_id'),
+            total_amount=request.data.get('total_amount'),
+            customer_id=customer,
+            status=new_status  # Establecer el campo status basado en total_amount
         )        
         payment.save()
  
-        if new_status == 1:
-            sld_debt = payment.total_amount
-
-            loan = loans_loan.objects.filter(customer_id=customer_id, status=2)
-        
-            # Recorrer cada préstamo y actualizar el campo outstanding
-            for loans in loan:
-                if sld_debt > 0:
-                    if loans.outstanding > sld_debt:
-                        
-                        #loans.updated_at = timezone.now
-                        loans.outstanding -= sld_debt
-                        loans.save()
-
-                        amount = sld_debt
-                        sld_debt = 0
-
-                        payments_detail = payments_paymentdetail(
-                            amount=  amount,
-                            payment_id = payment,
-                            loan_id  = loans
-                        )        
-                        payments_detail.save()
-                    else:
-                        sld_debt -= loans.outstanding
-                        amount = loans.outstanding
-                        loans.outstanding = 0
-                        #loan.updated_at = timezone.now
-                        loans.status = 4
-                        loans.save()
-                        
-                        payments_detail = payments_paymentdetail(
-                            amount=  amount,
-                            payment_id = payment,
-                            loan_id  = loans
-                        )        
-                        payments_detail.save()
-
-
+        if new_status == 2:
             return Response({
-                'message': 'Payment processed successfully.',
-                #'payment': serializer.data
+                'message': 'Payment Rejected.',
             }, status=status.HTTP_201_CREATED)
+           
+        remaining_amount = payment.total_amount
+
+        loans = loans_loan.objects.filter(customer_id=customer_id, status=2)
         
-class RejectedPaymentView(APIView):           
+        # Recorrer cada préstamo y actualizar el campo outstanding
+        for loan in loans:
+            if remaining_amount <= 0:
+                break
+                
+            if loan.outstanding > remaining_amount:
+                loan.outstanding -= remaining_amount
+                
+                payment_detail = payments_paymentdetail(
+                    amount=remaining_amount,
+                    payment_id=payment,
+                    loan_id=loan
+                )
+                
+                loan.save()
+                payment_detail.save()
+                
+                remaining_amount = 0
+            else:
+                remaining_amount -= loan.outstanding
+                amount = loan.outstanding 
+                loan.outstanding = 0
+                loan.status = 4  # Marca el préstamo como pagado
+                
+                payment_detail = payments_paymentdetail(
+                    amount=amount,
+                    payment_id=payment,
+                    loan_id=loan
+                )
+                
+                loan.save()
+                payment_detail.save()
+
+        return Response({
+            'message': 'Payment processed successfully.',
+        }, status=status.HTTP_201_CREATED)
+        
+class RejectedPaymentView(APIView):
     def post(self, request, format=None):
         payment_id = request.data.get('payment_id')
 
-        paydetail = payments_paymentdetail.objects.filter(payment_id=payment_id)
+        paydetails = payments_paymentdetail.objects.filter(payment_id=payment_id)
     
         # Recorrer cada préstamo y actualizar el campo outstanding
-        for paydetails in paydetail:
-            payment = paydetails.payment_id
-            loan = paydetails.loan_id
-            amount = paydetails.amount
+        for paydetail in paydetails:
+            payment = paydetail.payment_id
+            loan = paydetail.loan_id
+            amount = paydetail.amount
 
-            payment = payments_payment.objects.get(id =payment.id)
             payment.status = 2
             payment.save()
 
-            loan = paydetails.loan_id
-            amount = paydetails.amount
-
-            loan = loans_loan.objects.get(id=loan.id)
-            loan.status = 2
             loan.outstanding += amount
+            loan.status = 2
             loan.save()
 
         return Response({
             'message': 'Payment rejected successfully.',
-            #'payment': serializer.data
         }, status=status.HTTP_201_CREATED)
-    
