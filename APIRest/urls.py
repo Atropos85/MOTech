@@ -6,8 +6,8 @@ from .views.payment import *
 
 app_name = 'APIRest'
 urlpatterns = [
-    path(r'getcustomer/<id>/', getcustomerView.as_view(), name='Get_Customer'), 
-    path(r'createcustomer', createcustomerView.as_view(), name='Create_Customer'), 
+    path(r'getcustomer/<id>/', GetCustomerView.as_view(), name='Get_Customer'), 
+    path(r'createcustomer',CreateCustomerView.as_view(), name='Create_Customer'), 
     path(r'customerBalance/<id>/', CustomerBalanceView.as_view(), name='BalanceByCustomer'), 
     path(r'getloan/<id>/', getloanView.as_view(), name='Get_Loan'), 
     path(r'createloan', createloanView.as_view(), name='Create_Loan'), 
