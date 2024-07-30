@@ -1,6 +1,7 @@
 
 from django.test import TestCase, Client
-from .test_models import APIKey, User
+from ..models import APIKey, User
+
 
 class APIKeyTest(TestCase):
     def setUp(self):
@@ -20,7 +21,7 @@ class APIKeyTest(TestCase):
     
     def test_invalid_api_key(self):
         response = self.client.get(
-            '/my-view/', 
+            'getcustomer/1/', 
             HTTP_X_API_KEY='invalidkey'
         )
         self.assertEqual(response.status_code, 403)

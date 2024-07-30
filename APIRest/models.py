@@ -65,6 +65,9 @@ class loans_loan(models.Model):
     def save(self, *args, **kwargs):
         self.clean()  # Asegúrate de que las validaciones personalizadas se ejecuten al guardar
         super().save(*args, **kwargs)
+    
+    def __str__(self):
+        return f"Loan {self.external_id} for Customer {self.customer_id.external_id}"
 
 
 class payments_payment(models.Model):

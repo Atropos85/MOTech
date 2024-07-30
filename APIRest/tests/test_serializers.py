@@ -1,7 +1,7 @@
 from rest_framework.test import APITestCase
 from rest_framework import status
 from .test_models import customers_customer, loans_loan, payments_payment
-from .test_serializers import customer_Serializer, loan_Serializer, payment_Serializer
+from ..serializer import customer_Serializer, loan_Serializer, payment_Serializer
 
 class CustomerSerializerTests(APITestCase):
     def setUp(self):

@@ -68,6 +68,12 @@ class payment_Serializer(serializers.ModelSerializer):
     class Meta:
         model = payments_payment
         fields = '__all__'
+    
+    def validate_total_amount(self, value):
+        """Valida que el amount sea positivo."""
+        if value <= 0:
+            raise serializers.ValidationError("Total Amount must be a positive number.")
+        return value
 
 class PayDetSerializer(serializers.ModelSerializer):
     loan_id = serializers.CharField()
@@ -99,7 +105,7 @@ class CusSerializer(serializers.ModelSerializer):
     #loans = LoaSerializer(many=True, read_only=True)
     payments = PaySerializer(many=True, read_only=True)
     
-    customer_external_id = serializers.IntegerField(source = 'external_id')
+    customer_external_id = serializers.CharField(source = 'external_id')
     class Meta:
         model = customers_customer
         fields = ['customer_external_id', 'payments']
