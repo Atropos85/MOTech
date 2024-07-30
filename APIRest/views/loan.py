@@ -5,6 +5,7 @@ from rest_framework import status
 from ..models import *
 from ..serializer import *
 from rest_framework.exceptions import NotFound
+from decimal import Decimal
 # Create your views here.
     
 class getloanView(APIView):
@@ -46,7 +47,7 @@ class createloanView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
         
-        if (total_debt + amount) > score:
+        if (total_debt + Decimal(amount)) > score:
             return Response(
                 {"error": "The customer score is not enoght for the loan."},
                 status=status.HTTP_400_BAD_REQUEST

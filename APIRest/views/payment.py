@@ -5,6 +5,7 @@ from rest_framework import status
 from django.http import Http404
 from ..models import *
 from ..serializer import *
+from decimal import Decimal
 
 # Create your views here.
 
@@ -60,7 +61,7 @@ class createpaymentView(APIView):
                 break
                 
             if loan.outstanding > remaining_amount:
-                loan.outstanding -= remaining_amount
+                loan.outstanding -= Decimal(remaining_amount)
                 
                 payment_detail = payments_paymentdetail(
                     amount=remaining_amount,
