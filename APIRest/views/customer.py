@@ -8,13 +8,14 @@ from ..serializer import *
 
 class GetCustomerView(APIView):
     def get(self, request, id):
-
+        #se obtiene la info del customer y se envia al serializer
         customer = get_customer(id)
         serializer = customer_Serializer (customer)        
         return Response(serializer.data)   
 
 class CreateCustomerView(APIView):
     def post(self, request, *args, **kwargs):
+        #Serializa el request
         serializer = customer_Serializer(data=request.data)
 
         if serializer.is_valid():
@@ -23,6 +24,7 @@ class CreateCustomerView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class CustomerBalanceView(APIView):
+    #se obtiene el balance del customer y se envia al serializer
     def get(self, request, id):
         serializar_data = get_customer_balance(id)
         serializer = CustomerBalanceSerializer(serializar_data)

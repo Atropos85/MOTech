@@ -81,15 +81,15 @@ class payments_payment(models.Model):
     external_id = models.CharField(max_length=40, unique=True)
     total_amount = models.DecimalField(max_digits=12, decimal_places=2)
     status = models.SmallIntegerField(choices=STATUS_CHOICES, null=True)
-    paid_at = models.DateTimeField(null=True, blank=True)  # Allow null and blank if payment is not completed yet
+    paid_at = models.DateTimeField(null=True, blank=True)  
     customer_id = models.ForeignKey(customers_customer, on_delete=models.CASCADE, related_name='payments')
 
     def save(self, *args, **kwargs):
-        # Update paid_at if status is Completed
+        #Actualiza el pago si el estatus es completo
         if self.status == 1 and not self.paid_at:
             self.paid_at = timezone.now()
         elif self.status == 2:
-            self.paid_at = None  # Ensure paid_at is null if status is Rejected
+            self.paid_at = None 
         super().save(*args, **kwargs)
 
     def __str__(self):
@@ -104,16 +104,10 @@ class payments_paymentdetail(models.Model):
     payment_id = models.ForeignKey(payments_payment, on_delete=models.CASCADE, related_name='payment_details')
 
     def clean(self):
-        # Ensure that amount is positive
+        # Valida que el amount sea positivo
         if self.amount <= 0:
             raise ValidationError('Amount must be positive.')
         
-        # Ensure that amount does not exceed the total amount of the payment
-        if self.payment_id:
-            total_amount = self.payment_id.total_amount
-            if self.amount > total_amount:
-                raise ValidationError('Amount cannot be greater than the total amount of the payment.')
-
     def __str__(self):
         return f"Detail for Payment {self.payment_id.external_id}"
 
