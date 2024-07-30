@@ -1,5 +1,5 @@
 from django.test import TestCase
-from .models import customers_customer, loans_loan, payments_payment, payments_paymentdetail
+from .test_models import customers_customer, loans_loan, payments_payment, payments_paymentdetail
 from django.core.exceptions import ValidationError
 
 class CustomerModelTests(TestCase):

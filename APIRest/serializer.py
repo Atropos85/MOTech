@@ -71,7 +71,7 @@ class payment_Serializer(serializers.ModelSerializer):
 
 class PayDetSerializer(serializers.ModelSerializer):
     loan_id = serializers.CharField(source = 'loan_id')
-    payment_amount = serializers.DecimalField(source = 'amount')
+    payment_amount = serializers.DecimalField(source = 'amount',max_digits=20, decimal_places=10)
    
     class Meta:
         model = payments_paymentdetail
@@ -87,7 +87,7 @@ class PaySerializer(serializers.ModelSerializer):
     payment_details = PayDetSerializer(many=True, read_only=True)
     
     payment_external_id = serializers.CharField(source = 'external_id')
-    total_amount = serializers.DecimalField(source = 'total_amount')
+    total_amount = serializers.DecimalField(source = 'total_amount',max_digits=12, decimal_places=2)
     status = serializers.IntegerField(source = 'status')
     payment_date = serializers.DateTimeField(source = 'paid_at')
     

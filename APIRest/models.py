@@ -1,6 +1,8 @@
 from django.db import models
 from django.core.exceptions import ValidationError
 from django.utils import timezone
+from django.contrib.auth.models import User
+import uuid
 
 class customers_customer(models.Model):
     STATUS_ACTIVE = 1
@@ -111,3 +113,12 @@ class payments_paymentdetail(models.Model):
 
     def __str__(self):
         return f"Detail for Payment {self.payment_id.external_id}"
+
+class APIKey(models.Model):
+    key = models.CharField(max_length=40, unique=True, default=uuid.uuid4)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_active = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.key

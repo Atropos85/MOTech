@@ -1,6 +1,6 @@
 from rest_framework.test import APITestCase
 from rest_framework import status
-from .models import customers_customer, loans_loan, payments_payment
+from .test_models import customers_customer, loans_loan, payments_payment
 from django.urls import reverse
 
 class CustomerViewTests(APITestCase):
