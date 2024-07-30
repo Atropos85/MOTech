@@ -1,25 +1,23 @@
-from rest_framework import generics
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from ..models import *
+from ..services.services import *
 from ..serializer import *
 from rest_framework.exceptions import NotFound
 from decimal import Decimal
 # Create your views here.
     
-class getloanView(APIView):
+class GetLoanView(APIView):
     def get(self, request, id):
-        try:
-           loan = loans_loan.objects.filter(customer_id=id)
-        except loans_loan.DoesNotExist:
-            raise NotFound(detail="Loan not found")
+        
+        loan = get_loan(id)
         
         serializer = loan_Serializer (loan, many= True)       
         return Response(serializer.data)    
 
-class createloanView(APIView):    
+class CreateLoanView(APIView):    
     def post(self, request, format=None):
+        
         customer_id = request.data.get('customer_id')
         
         try:
